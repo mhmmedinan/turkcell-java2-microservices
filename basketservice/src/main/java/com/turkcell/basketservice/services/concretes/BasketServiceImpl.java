@@ -18,7 +18,12 @@ public class BasketServiceImpl implements BasketService {
     @Override
     public void add(String customerId, String productId) {
 
-        Basket basket = new Basket();
+        Basket basket = redisRepository.getBasketByCustomerId(customerId);
+
+        if (basket == null) {
+            basket = new Basket();
+            basket.setCustomerId(customerId);
+        }
         BasketItem basketItem = new BasketItem();
         basketItem.setProductId(productId);
         basketItem.setProductName("Modem");

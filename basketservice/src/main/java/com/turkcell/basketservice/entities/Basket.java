@@ -2,10 +2,12 @@ package com.turkcell.basketservice.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -18,5 +20,6 @@ public class Basket implements Serializable {
 
     public Basket(){
         this.basketItems = new ArrayList<>();
+        this.id= UUID.randomUUID().toString();
     }
 }
