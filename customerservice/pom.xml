@@ -38,9 +38,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.halitkalayci</groupId>
+			<groupId>io.github.mhmmedinan</groupId>
 			<artifactId>core</artifactId>
-			<version>1.2.7</version>
+			<version>1.0.0</version>
 		</dependency>
 
 		<dependency>
