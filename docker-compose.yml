@@ -1,8 +1,33 @@
 version: '3.8'
 
 services:
-   
+  
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  
+  kafka:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=LISTENER_DEVELOPMENT://localhost:9092,LISTENER_PRODUCTION://kafka:29092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=LISTENER_DEVELOPMENT:PLAINTEXT,LISTENER_PRODUCTION:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=LISTENER_DEVELOPMENT://localhost:9092,LISTENER_PRODUCTION://kafka:29092
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=LISTENER_PRODUCTION
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+ 
   crmconfigserver:
+    image: crmconfigserverimage
     build: ./configserver
     restart: always
     container_name : crmconfigserver
@@ -12,6 +37,7 @@ services:
       - 8079:8079
 
   crmdiscoveryserver:
+    image: crmdiscoveryserverimage
     build: ./discoveryserver
     restart: always
     container_name: crmdiscoveryserver
@@ -23,6 +49,7 @@ services:
       - crmconfigserver
 
   crmgatewayserver:
+    image: crmgatewayserverimage
     build: ./gatewayserver
     restart: always
     container_name: crmgatewayserver
@@ -33,3 +60,46 @@ services:
     depends_on:
       - crmconfigserver
       - crmdiscoveryserver
+
+  customerdbprod:
+    container_name: customerdbprod
+    image: postgres
+    ports:
+      - "5460:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=customerdbprod
+
+  crmcustomerservice:
+    build: ./customerservice
+    container_name: crmcustomerservice
+    image: crmcustomerserviceimage
+    volumes:
+      - ./customerservice:/app
+    depends_on:
+      - customerdbprod
+      - crmdiscoveryserver
+      - crmconfigserver
+      - kafka
+
+  authdbprod:
+    container_name: authdbprod
+    image: postgres
+    ports:
+      - "5461:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=123456
+      - POSTGRES_DB=authdbprod
+
+  crmauthservice:
+    build: ./authservice
+    container_name: crmauthservice
+    image: crmauthserviceimage
+    volumes:
+      - ./authservice:/app
+    depends_on:
+      - authdbprod
+      - crmdiscoveryserver
+      - crmconfigserver
