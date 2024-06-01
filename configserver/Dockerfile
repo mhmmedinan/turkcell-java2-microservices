@@ -1,8 +1,6 @@
-FROM maven:3.8.3-openjdk-17 as build
+FROM maven:3.8.3-openjdk-17
 WORKDIR /app
 COPY . /app/
 RUN mvn clean package -DskipTests
-
-FROM openjdk:17-jdk
-COPY --from=build /app/target/configserver-0.0.1-SNAPSHOT.jar /app/configserver.jar
-CMD java -jar /app/configserver.jar
+ENV SPRING_CLOUD_CONFIG_SERVER_GIT_URI=https://github.com/mhmmedinan/turkcellcrm-configuration
+CMD ["mvn","spring-boot:run"]

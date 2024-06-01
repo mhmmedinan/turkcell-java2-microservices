@@ -1,10 +1,11 @@
 package com.turkcell.authservice.services.concretes;
 
-import com.halitkalayci.jwt.JwtService;
+
 import com.turkcell.authservice.services.abstracts.AuthService;
 import com.turkcell.authservice.services.abstracts.UserService;
 import com.turkcell.authservice.services.dtos.requests.LoginRequest;
 import com.turkcell.authservice.services.dtos.requests.RegisterRequest;
+import com.turkcell.crm.core.util.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

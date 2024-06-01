@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+   
+  crmconfigserver:
+    build: ./configserver
+    restart: always
+    container_name : crmconfigserver
+    volumes:
+      - ./configserver:/app
+    ports:
+      - 8079:8079
+
+  crmdiscoveryserver:
+    build: ./discoveryserver
+    restart: always
+    container_name: crmdiscoveryserver
+    volumes:
+      - ./discoveryserver:/app
+    ports:
+      - 8888:8888
+    depends_on:
+      - crmconfigserver
+
+  crmgatewayserver:
+    build: ./gatewayserver
+    restart: always
+    container_name: crmgatewayserver
+    volumes:
+      - ./gatewayserver:/app
+    ports:
+      - 8001:8001
+    depends_on:
+      - crmconfigserver
+      - crmdiscoveryserver
